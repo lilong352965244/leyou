@@ -1,0 +1,84 @@
+package com.leyou.item.service.impl;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.leyou.common.pojo.PageResult;
+import com.leyou.item.mapper.BrandMapper;
+import com.leyou.item.mapper.CategoryMapper;
+import com.leyou.item.mapper.SpuMapper;
+import com.leyou.item.pojo.Brand;
+import com.leyou.item.pojo.Spu;
+import com.leyou.item.pojo.SpuBo;
+import com.leyou.item.service.CategoryService;
+import com.leyou.item.service.GoodsService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * @author: lifalong
+ * @create: 2019-10-26 13:33
+ * @description:
+ **/
+@Service
+public class GoodsServiceImpl implements GoodsService {
+
+    @Autowired
+    private SpuMapper spuMapper;
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private BrandMapper brandMapper;
+
+    @Override
+    public PageResult<SpuBo> querySpuByPageAndSort(Integer page, Integer rows, Boolean saleable, String key) {
+        //1.设置查询条件
+        // 分页最大允许查200条数据
+        PageHelper.startPage(page, Math.min(rows, 200));
+
+        //创建查询条件
+        Example example = new Example(Spu.class);
+        Example.Criteria criteria = example.createCriteria();
+
+        //是否过滤上下架
+        if (saleable != null) {
+            criteria.orEqualTo("saleable", saleable);
+        }
+
+        //是否模糊查询
+        if (StringUtils.isNoneBlank(key)) {
+            criteria.andLike("title", "%" + key + "%");
+        }
+
+        Page<Spu> pageInfo = (Page<Spu>) this.spuMapper.selectByExample(example);
+
+
+        List<SpuBo> list = pageInfo.getResult().stream().map(spu -> {
+            SpuBo spuBo = new SpuBo();
+            //1、把spu属性赋值给spubo
+            BeanUtils.copyProperties(spu, spuBo);
+
+            //2、查询spu的商品分类名称，要查三级分类
+            List<String> names = this.categoryService.queryNamesByIds(Arrays.asList(spu.getCid1(), spu.getCid2()
+                    , spu.getCid3()));
+
+            //将分类名称拼接后存入
+            spuBo.setCname(StringUtils.join(names, "/"));
+
+            //3、查询spu的品牌名称
+            Brand brand = this.brandMapper.selectByPrimaryKey(spu.getBrandId());
+            spuBo.setBname(brand.getName());
+            return spuBo;
+        }).collect(Collectors.toList());
+
+        return new PageResult<>(pageInfo.getTotal(), list);
+    }
+}

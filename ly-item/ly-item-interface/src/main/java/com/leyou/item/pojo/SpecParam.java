@@ -2,10 +2,8 @@ package com.leyou.item.pojo;
 
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.temporal.ValueRange;
 
 /**
@@ -15,14 +13,15 @@ import java.time.temporal.ValueRange;
  **/
 @Table(name ="tb_spec_param")
 @Data
-public class SpecParam {
+public class SpecParam implements Serializable {
+    private static final long serialVersionUID = 5298008357924895636L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long cid;
     private Long groupId;
     private String name;
-  //  @Column(name = "`numeric`")
+    @Column(name = "`numeric`")
     private Boolean numeric;
     private String unit;
     private Boolean generic;

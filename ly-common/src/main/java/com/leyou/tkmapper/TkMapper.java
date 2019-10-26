@@ -1,5 +1,6 @@
 package com.leyou.tkmapper;
 
+import tk.mybatis.mapper.additional.idlist.SelectByIdListMapper;
 import tk.mybatis.mapper.common.Mapper;
 
 /**
@@ -7,5 +8,5 @@ import tk.mybatis.mapper.common.Mapper;
  * @create: 2019-10-24 14:12
  * @description: 统一的TkMapper接口
  **/
-public interface TkMapper<T> extends Mapper<T> {
+public interface TkMapper<T> extends Mapper<T>, SelectByIdListMapper<T,Long> {
 }

@@ -11,5 +11,17 @@ import java.util.List;
  **/
 public interface CategoryService {
 
+    /**
+     * 根据父Id查询
+     * @param pid
+     * @return
+     */
     List<Category> queryListByParent(Long pid);
+
+    /**
+     * 根据ids 查询 names
+     * @param ids
+     * @return
+     */
+    List<String> queryNamesByIds(List<Long> ids);
 }

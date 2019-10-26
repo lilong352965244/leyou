@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author: lifalong
@@ -19,9 +20,15 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryMapper categoryMapper;
 
     @Override
-    public List<Category> queryListByParent(Long pid){
-        Category category =new Category();
+    public List<Category> queryListByParent(Long pid) {
+        Category category = new Category();
         category.setParentId(pid);
-        return  this.categoryMapper.select(category);
+        return this.categoryMapper.select(category);
+    }
+
+    @Override
+    public List<String> queryNamesByIds(List<Long> ids) {
+        List<Category> list = this.categoryMapper.selectByIdList(ids);
+        return list.stream().map(category -> category.getName()).collect(Collectors.toList());
     }
 }

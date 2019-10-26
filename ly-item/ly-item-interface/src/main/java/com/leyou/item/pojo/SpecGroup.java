@@ -10,18 +10,18 @@ import java.io.Serializable;
 
 /**
  * @author: lifalong
- * @create: 2019-10-24 15:16
- * @description: 商品品牌
+ * @create: 2019-10-26 10:18
+ * @description: 规格模板组
  **/
-@Table(name = "tb_brand")
+@Table(name = "tb_spec_group")
 @Data
-public class Brand implements Serializable {
-    private static final long serialVersionUID = -985888528237202101L;
-
+public class SpecGroup implements Serializable {
+    private static final long serialVersionUID = -302207528852931562L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;// 品牌名称
-    private String image;// 品牌图片
-    private Character letter;
+
+    private Long cid;
+
+    private String name;
 }
